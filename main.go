@@ -36,7 +36,7 @@ import (
 func main() {
 	// ----------------    create UnixFS DAG in-memory
 	ls := cidlink.DefaultLinkSystem()
-	storage := cidlink.Memory{}
+	storage := cidlink.Memory{Bag: make(map[string][]byte)}
 	ls.StorageWriteOpener = storage.OpenWrite
 	ls.StorageReadOpener = func(c linking.LinkContext, lnk datamodel.Link) (io.Reader, error) {
 		return storage.OpenRead(c, lnk)
@@ -99,8 +99,13 @@ func createCarv1(ls *linking.LinkSystem, rootCid cid.Cid) *bytes.Buffer {
 	sel := sb.ExploreInterpretAs("unixfs", sb.MatcherSubset(0, 256*1000))
 	unixfsnode.AddUnixFSReificationToLinkSystem(ls)
 	var carbz bytes.Buffer
+
+	chooser := dagpb.AddSupportToChooser(func(l datamodel.Link, lc linking.LinkContext) (datamodel.NodePrototype, error) {
+		return basicnode.Prototype.Any, nil
+	})
+
 	_, err := car.TraverseV1(context.Background(), ls, rootCid, sel.Node(), &carbz, car.StoreIdentityCIDs(false), car.WithoutIndex(),
-		carv2bs.AllowDuplicatePuts(false), carv2bs.UseWholeCIDs(false))
+		carv2bs.AllowDuplicatePuts(false), carv2bs.UseWholeCIDs(false), car.WithTraversalPrototypeChooser(chooser))
 	if err != nil {
 		panic(err)
 	}

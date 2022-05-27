@@ -11,3 +11,5 @@ require (
 	github.com/ipld/go-ipld-prime v0.16.0
 	github.com/ipld/go-ipld-prime/storage/bsadapter v0.0.0-20211210234204-ce2a1c70cd73
 )
+
+replace github.com/ipld/go-car/v2 => ../go-car/v2
