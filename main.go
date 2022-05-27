@@ -49,6 +49,7 @@ func main() {
 
 	// Notes:
 	// 1 This requires us to change the go-car/v2 traversal code to load the root as a dag PB node so it can be reified as a unixfs file node.
+	//     Have made the above change at https://github.com/ipld/go-car/pull/304/commits
 	// 2. Something is wrong here, the CAR file size is 8MB even though we are ONLY selecting a 256KB RANGE !!!
 	carbuf := createCarv1(&ls, rootCid)
 	fmt.Println("Finished creating CAR file for range traversal on Unixfs dag, car file size is:", carbuf.Len())
